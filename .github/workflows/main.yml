@@ -31,6 +31,5 @@ jobs:
       with:
         flutter-version: '2.5.3'
     - run: flutter pub get
-    - run: flutter test
     - run: flutter build apk --split-per-abi
 
