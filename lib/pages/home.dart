@@ -174,8 +174,11 @@ class _HomePageState extends State<HomePage> {
               "Invia soldi",
               "Inserire il numero di IC da inviare",
               (() async {
+                _textFieldController.text =
+                    _textFieldController.text.replaceAll('k', "000");
                 await sendMoney(
                     user, int.parse(_textFieldController.text), context);
+                reloadPage();
               }),
             );
           }),
@@ -213,11 +216,11 @@ class _HomePageState extends State<HomePage> {
     return DateTime.parse(str);
   }
 
-  int min(a, b) {
-    return a <= b ? a : b;
-  }
-
   String getLastMovements() {
+    int min(a, b) {
+      return a <= b ? a : b;
+    }
+
     FLog.info(text: "Getting last movements");
     var _in = Cache.getInstance().getCacheData(userData.user).statementIn;
     var _out = Cache.getInstance().getCacheData(userData.user).statementOut;
@@ -248,6 +251,9 @@ class _HomePageState extends State<HomePage> {
       FLog.info(text: "lastMovements: ${lastMovements.split('\n')}");
       for (var last in lastMovements.split('\n')) {
         var color = last.contains('+') ? greenColor : redColor;
+        // Rimuove tutti i segni positivi e negativi
+        // all'utente basta solo il colore per capire
+        last = last.replaceAll('-', '').replaceAll('+', '');
         texts.add(TextSpan(
           text: "$last\n",
           style: TextStyle(
@@ -272,6 +278,24 @@ class _HomePageState extends State<HomePage> {
     userData.saveCredentialsList();
     Navigator.push(context,
         MaterialPageRoute(builder: (_) => const LoginPage(autoLogin: false)));
+  }
+
+  Future<void> reloadPage() async {
+    try {
+      var pref = await SharedPreferences.getInstance();
+      pref.getBool("all_account_requested") ?? false
+          ? Cache.getInstance().reloadAll()
+          : Cache.getInstance().reloadUser(userData.user);
+    } catch (e) {
+      FLog.fatal(
+          text: "Error on asking reloading for ${userData.user}; trying anyway",
+          exception: e);
+      try {
+        Cache.getInstance().reloadUser(userData.user);
+      } catch (e) {
+        FLog.fatal(text: "Error on asking the second time", exception: e);
+      }
+    }
   }
 
   @override
@@ -309,23 +333,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () async {
-                try {
-                  var pref = await SharedPreferences.getInstance();
-                  pref.getBool("all_account_requested") ?? false
-                      ? Cache.getInstance().reloadAll()
-                      : Cache.getInstance().reloadUser(userData.user);
-                } catch (e) {
-                  FLog.fatal(
-                      text:
-                          "Error on asking reloading for ${userData.user}; trying anyway",
-                      exception: e);
-                  try {
-                    Cache.getInstance().reloadUser(userData.user);
-                  } catch (e) {
-                    FLog.fatal(
-                        text: "Error on asking the second time", exception: e);
-                  }
-                }
+                await reloadPage();
               },
             ),
             IconButton(
@@ -557,7 +565,7 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
                 child: Center(
                   child: Text(
-                    "${Cache.getInstance().getCacheData(userData.user).money} IC",
+                    Cache.getInstance().getCacheData(userData.user).money,
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
                               Brightness.dark

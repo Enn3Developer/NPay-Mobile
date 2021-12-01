@@ -34,28 +34,31 @@ class _SettingsPage extends State<SettingsPage> {
             title: "Sync",
             tiles: [
               SettingsTile.switchTile(
-                title: "Sincronizzazione iniziale",
-                subtitle:
-                    "Sincronizza automaticamente *tutti* gli account presenti",
-                leading: const Icon(Icons.sync_rounded),
-                switchValue: pref != null
-                    ? pref!.getBool("all_account") ?? false
-                    : false,
-                onToggle: (value) =>
-                    pref != null ? pref!.setBool("all_account", value) : false,
-              ),
+                  title: "Sincronizzazione iniziale",
+                  subtitle:
+                      "Sincronizza automaticamente *tutti* gli account presenti",
+                  leading: const Icon(Icons.sync_rounded),
+                  switchValue: pref != null
+                      ? pref!.getBool("all_account") ?? false
+                      : false,
+                  onToggle: (value) => setState(() {
+                        pref != null
+                            ? pref!.setBool("all_account", value)
+                            : false;
+                      })),
               SettingsTile.switchTile(
-                title: "Sincronizzazione",
-                subtitle:
-                    "Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta",
-                leading: const Icon(Icons.cached_rounded),
-                switchValue: pref != null
-                    ? pref!.getBool("all_account_requested") ?? false
-                    : false,
-                onToggle: (value) => pref != null
-                    ? pref!.setBool("all_account_requested", value)
-                    : false,
-              ),
+                  title: "Sincronizzazione",
+                  subtitle:
+                      "Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta",
+                  leading: const Icon(Icons.cached_rounded),
+                  switchValue: pref != null
+                      ? pref!.getBool("all_account_requested") ?? false
+                      : false,
+                  onToggle: (value) => setState(() {
+                        pref != null
+                            ? pref!.setBool("all_account_requested", value)
+                            : false;
+                      })),
             ],
           ),
           SettingsSection(
@@ -64,7 +67,7 @@ class _SettingsPage extends State<SettingsPage> {
             tiles: [
               SettingsTile.switchTile(
                 title: "Impronta digitale",
-                subtitle: "NON FUNZIONA PERCHÉ ANDROID FA SCHIFO",
+                subtitle: "Login con impronta digitale",
                 leading: const Icon(Icons.fingerprint_rounded),
                 switchValue: pref != null
                     ? pref!.getBool("fingerprint") ?? false

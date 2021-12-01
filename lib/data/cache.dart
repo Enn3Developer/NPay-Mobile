@@ -8,7 +8,10 @@ import 'package:npay/utils/events.dart';
 
 class NoCacheData extends Error {}
 
-var numberFormat = NumberFormat("###,###,###,##0.##");
+var numberFormat = NumberFormat.currency(
+    locale: 'it', name: 'CLF', symbol: 'IC', decimalDigits: 2);
+
+// TODO: implement `Statement` integration (2.3.0-dev)
 
 class CacheData {
   final List<String> _statementIn = List.empty(growable: true);
