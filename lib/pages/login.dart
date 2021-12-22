@@ -5,6 +5,7 @@ import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:npay/data/cache.dart';
+import 'package:npay/data/statement.dart';
 import 'package:npay/data/user_data.dart';
 import 'package:npay/pages/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
     UserData userData = UserData.getInstance();
     await userData.loadAll();
     if (userData.isValid()) {
+      await Statement.getInstance().load();
       bool authenticated = true;
       var pref = await SharedPreferences.getInstance();
       if (pref.getBool("fingerprint") ?? false) {
@@ -66,9 +68,11 @@ class _LoginPageState extends State<LoginPage> {
           if (await localAuth.canCheckBiometrics) {
             log("Can check biometrics");
             authenticated = await localAuth.authenticate(
-              localizedReason: "Authenticate for Testing", // message for dialog
+              localizedReason: "Autenticati per accedere al tuo account",
+              // message for dialog
               biometricOnly: true,
-              useErrorDialogs: true, // show error in dialog
+              useErrorDialogs: true,
+              // show error in dialog
               stickyAuth: true, // native process
             );
           }
@@ -85,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const HomePage()),
-              (r) => false);
+                  (r) => false);
         });
       }
     } else {

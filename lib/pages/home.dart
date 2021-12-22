@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   var money = "0";
   var userData = UserData.getInstance();
   final _textFieldController = TextEditingController();
+  var connection = true;
 
   Future<void> displayTextInputDialog(
       BuildContext context,
@@ -86,7 +90,8 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  Future<void> sendMoney(String user, int amount, BuildContext context) async {
+  Future<void> sendMoney(
+      String user, double amount, BuildContext context) async {
     FLog.info(text: "Sending money");
     var response = await http.get(Uri.parse(
         "https://sunfire.a-centauri.com/npayapi/?richiesta=trasferimento&auth=${userData.pass}&utente=${userData.user}&valore=$amount&beneficiario=$user"));
@@ -101,6 +106,7 @@ class _HomePageState extends State<HomePage> {
         },
       );
     }
+    reloadPage();
   }
 
   List<Widget> getUsers() {
@@ -113,9 +119,9 @@ class _HomePageState extends State<HomePage> {
             user,
             style: TextStyle(
               color:
-                  MediaQuery.of(context).platformBrightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
+              MediaQuery.of(context).platformBrightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 20,
             ),
           ),
@@ -147,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(greenColor),
+                          MaterialStateProperty.all(greenColor),
                         ),
                         child: const Text(
                           "SI",
@@ -173,12 +179,22 @@ class _HomePageState extends State<HomePage> {
               TextInputType.number,
               "Invia soldi",
               "Inserire il numero di IC da inviare",
-              (() async {
-                _textFieldController.text =
-                    _textFieldController.text.replaceAll('k', "000");
-                await sendMoney(
-                    user, int.parse(_textFieldController.text), context);
-                reloadPage();
+              (() {
+                String str = "";
+                int k = 0;
+                for (int i = 0; i < _textFieldController.text.length; i++) {
+                  var char = _textFieldController.text[i];
+                  if (double.tryParse(char) != null) {
+                    str += char;
+                  } else if (char == ',' || char == '.') {
+                    str += '.';
+                  } else if (char == 'k') {
+                    k++;
+                  }
+                }
+                double money = double.parse(str);
+                money *= pow(1000, k);
+                sendMoney(user, money, context);
               }),
             );
           }),
@@ -303,9 +319,26 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     EventManager.getInstance().addListener(EventListener(
       eventName: "reload_page",
-      function: (() {
+      function: ((noError) {
         try {
           setState(() {
+            if (noError != connection) {
+              if (!noError) {
+                final snackBar = SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  content: const Text("Impossibile connettersi al server"),
+                  backgroundColor: redColor,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else {
+                final snackBar = SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  content: const Text("Riconnesso al server"),
+                  backgroundColor: greenColor,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            }
             money = Cache.getInstance().getCacheData(userData.user).money;
           });
         } catch (e, trace) {
@@ -314,6 +347,10 @@ class _HomePageState extends State<HomePage> {
         }
       }),
     ));
+    const duration = Duration(seconds: 5);
+    Timer.periodic(duration, (timer) async {
+      await reloadPage();
+    });
     FLog.info(text: "Initialized");
   }
 
@@ -383,42 +420,42 @@ class _HomePageState extends State<HomePage> {
                                     itemCount: userData.credentialsList.length,
                                     itemBuilder: (context, i) {
                                       return userData.credentialsList
-                                                  .elementAt(i)
-                                                  .user !=
-                                              userData.user
+                                          .elementAt(i)
+                                          .user !=
+                                          userData.user
                                           ? TextButton(
-                                              child: Text(userData
-                                                  .credentialsList
-                                                  .elementAt(i)
-                                                  .user),
-                                              onPressed: () async {
-                                                userData.setDefaultUser(userData
-                                                    .credentialsList
-                                                    .elementAt(i)
-                                                    .user);
-                                                userData.saveCredentialsList();
-                                                var pref =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                pref.getBool(
-                                                            "all_account_requested") ??
-                                                        false
-                                                    ? false
-                                                    : await Cache.getInstance()
-                                                        .reloadUser(
-                                                            userData.user);
-                                                Navigator.pushAndRemoveUntil(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            const HomePage()),
-                                                    (r) => false);
-                                              },
-                                            )
+                                        child: Text(userData
+                                            .credentialsList
+                                            .elementAt(i)
+                                            .user),
+                                        onPressed: () async {
+                                          userData.setDefaultUser(userData
+                                              .credentialsList
+                                              .elementAt(i)
+                                              .user);
+                                          userData.saveCredentialsList();
+                                          var pref =
+                                          await SharedPreferences
+                                              .getInstance();
+                                          pref.getBool(
+                                              "all_account_requested") ??
+                                              false
+                                              ? false
+                                              : await Cache.getInstance()
+                                              .reloadUser(
+                                              userData.user);
+                                          Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                  const HomePage()),
+                                                  (r) => false);
+                                        },
+                                      )
                                           : const SizedBox(
-                                              height: 0,
-                                              width: 0,
-                                            );
+                                        height: 0,
+                                        width: 0,
+                                      );
                                     },
                                   ),
                                 ));
@@ -435,13 +472,13 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (_) =>
-                                    const LoginPage(autoLogin: false)),
-                            (r) => false);
+                                const LoginPage(autoLogin: false)),
+                                (r) => false);
                         break;
                     }
                   },
                   itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<PopupAccount>>[
+                  <PopupMenuEntry<PopupAccount>>[
                     PopupMenuItem(
                       value: PopupAccount.change,
                       child: RichText(
@@ -451,20 +488,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.people_alt_rounded,
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Cambia account",
                               style: TextStyle(
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -480,20 +517,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.person_add_rounded,
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Aggiungi account",
                               style: TextStyle(
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -509,20 +546,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.logout_rounded,
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Esci",
                               style: TextStyle(
                                 color:
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black,
+                                MediaQuery.of(context).platformBrightness ==
+                                    Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -541,7 +578,7 @@ class _HomePageState extends State<HomePage> {
                     "È un piacere rivederti,",
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
+                          Brightness.dark
                           ? Colors.white
                           : Colors.black,
                       fontSize: 26,
@@ -554,7 +591,7 @@ class _HomePageState extends State<HomePage> {
                   userData.user,
                   style: TextStyle(
                     color: MediaQuery.of(context).platformBrightness ==
-                            Brightness.dark
+                        Brightness.dark
                         ? Colors.white
                         : Colors.black,
                     fontSize: 26,
@@ -568,7 +605,7 @@ class _HomePageState extends State<HomePage> {
                     Cache.getInstance().getCacheData(userData.user).money,
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
-                              Brightness.dark
+                          Brightness.dark
                           ? Colors.white
                           : Colors.black,
                       fontSize: 30,
@@ -616,6 +653,19 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
+              // TextButton(
+              //   onPressed: () async {
+              //     await Statement.getInstance().save();
+              //   },
+              //   child: const Text("Save"),
+              // ),
+              // TextButton(
+              //   onPressed: () async {
+              //     await Statement.getInstance().load();
+              //     reloadPage();
+              //   },
+              //   child: const Text("Load"),
+              // ),
             ],
           ),
         ),

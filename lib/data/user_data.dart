@@ -5,6 +5,7 @@ import 'package:f_logs/f_logs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:npay/data/cache.dart';
+import 'package:npay/data/statement.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Credentials {
@@ -105,6 +106,7 @@ class UserData {
   Future<bool> addAccountFromCredentials(Credentials credentials) async {
     FLog.info(text: "Adding account ${credentials.user}");
     if (!credentialsList.contains(credentials) && await credentials.isValid()) {
+      Statement.getInstance().addUser(credentials.user);
       _defaultUser =
           _defaultUser == "error_no_u_LEGO69" ? credentials.user : _defaultUser;
       credentialsList.add(credentials);
@@ -113,8 +115,9 @@ class UserData {
     return false;
   }
 
-  void removeAccount(String user) async {
+  void removeAccount(String user) {
     FLog.info(text: "Removing account: $user");
+    Statement.getInstance().removeUser(user);
     if (user == _defaultUser) {
       FLog.info(text: "User is default");
       removeDefaultUser();
@@ -180,6 +183,7 @@ class UserData {
   Future<void> saveAll() async {
     await saveCredentialsList();
     await savePhoneBook();
+    await Statement.getInstance().save();
   }
 
   Future<void> loadAll() async {

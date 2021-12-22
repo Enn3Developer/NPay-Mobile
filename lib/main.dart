@@ -53,10 +53,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: blueColor,
+        toggleableActiveColor: blueColor,
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: blueColor,
+        toggleableActiveColor: blueColor,
       ),
       home: const LoginPage(autoLogin: true),
     );

@@ -1,9 +1,10 @@
 import 'package:f_logs/f_logs.dart';
 
-class Event {
+class Event<T> {
   final String name;
+  final T data;
 
-  const Event({required this.name});
+  const Event({required this.name, required this.data});
 }
 
 class EventListener {
@@ -34,7 +35,7 @@ class EventManager {
         // Controllo veloce per vedere se
         // il listener "ascolta" l'evento triggerato
         try {
-          listener.function();
+          listener.function(event.data);
         } catch (e, trace) {
           FLog.severe(text: "Error for event ${event.name}", exception: e);
           FLog.trace(text: "Trace", exception: e, stacktrace: trace);

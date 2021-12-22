@@ -15,12 +15,14 @@ final DateFormat dateFormat = DateFormat("dd/MM/yyyy HH:mm");
 class _Movement {
   final DateTime date;
   final String money;
+  final double rawMoney;
   final String direction;
   final MaterialColor color;
 
   const _Movement(
       {required this.date,
       required this.money,
+      required this.rawMoney,
       required this.direction,
       required this.color});
 }
@@ -36,6 +38,8 @@ class _StatementPage extends State<StatementPage> {
   List<_Movement> movements = List.empty(growable: true);
   bool isAscending = false;
   int? index;
+  bool from = true;
+  bool to = true;
 
   DateTime getDate(String raw) {
     var splitted = raw.split("|");
@@ -51,6 +55,7 @@ class _StatementPage extends State<StatementPage> {
   _Movement rawToMovement(String raw, MaterialColor color) {
     var date = getDate(raw);
     var money = "";
+    var rawMoney = 0.0;
     var direction = "";
     var splitted = raw.split('|');
     for (int i = 0; i < splitted[1].length - 1; i++) {
@@ -61,8 +66,11 @@ class _StatementPage extends State<StatementPage> {
         String result = "";
         for (int j = 0; j < splitted[1].length; j++) {
           if (j == (i - 1)) {
-            money = numberFormat
-                .format(double.parse(result.replaceAll(',', '.'))); // Soldi
+            rawMoney = double.parse(result.replaceAll(',', '.'));
+            money = numberFormat.format(rawMoney); // Soldi
+            if (rawMoney < 0) {
+              rawMoney = -rawMoney;
+            }
             result = "";
           }
           if (j == (i + 2)) {
@@ -77,7 +85,11 @@ class _StatementPage extends State<StatementPage> {
       }
     }
     return _Movement(
-        date: date, money: money, direction: direction, color: color);
+        date: date,
+        money: money,
+        rawMoney: rawMoney,
+        direction: direction,
+        color: color);
   }
 
   void prepareMovements() {
@@ -102,6 +114,24 @@ class _StatementPage extends State<StatementPage> {
                   style: TextStyle(color: movements[index].color))),
             ]));
     return rows;
+  }
+
+  void applyFilters() {
+    movements.clear();
+    prepareMovements();
+    setState(() {
+      movements.removeWhere((element) {
+        if (!from && !to) {
+          return element.direction.split(' ')[0] == "da" ||
+              element.direction.split(' ')[0] == "a";
+        } else if (!from) {
+          return element.direction.split(' ')[0] == "da";
+        } else if (!to) {
+          return element.direction.split(' ')[0] == "a";
+        }
+        return false;
+      });
+    });
   }
 
   @override
@@ -174,13 +204,11 @@ class _StatementPage extends State<StatementPage> {
                       isAscending = ascending;
                       index = columnIndex;
                       if (ascending) {
-                        movements.sort((a, b) => a.money
-                            .replaceAll('-', '')
-                            .compareTo(b.money.replaceAll('-', '')));
+                        movements
+                            .sort((a, b) => a.rawMoney.compareTo(b.rawMoney));
                       } else {
-                        movements.sort((a, b) => -a.money
-                            .replaceAll('-', '')
-                            .compareTo(b.money.replaceAll('-', '')));
+                        movements
+                            .sort((a, b) => -a.rawMoney.compareTo(b.rawMoney));
                       }
                     });
                   },
@@ -191,11 +219,77 @@ class _StatementPage extends State<StatementPage> {
                     ),
                   ),
                 ),
-                const DataColumn(
-                  label: Text(
-                    "Direzione",
-                    style: TextStyle(
-                      color: Colors.white,
+                DataColumn(
+                  label: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text("Filtri"),
+                            content: SizedBox(
+                              height: 150,
+                              child: Column(
+                                // shrinkWrap: true,
+                                children: <Widget>[
+                                  const Text("Utenti"),
+                                  Row(
+                                    children: [
+                                      StatefulBuilder(
+                                        builder: (BuildContext context,
+                                            StateSetter setState) {
+                                          return Checkbox(
+                                            value: from,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                if (value != null) {
+                                                  from = value;
+                                                }
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      const Text("Da"),
+                                      StatefulBuilder(
+                                        builder: (BuildContext context,
+                                            StateSetter setState) {
+                                          return Checkbox(
+                                            value: to,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                if (value != null) {
+                                                  to = value;
+                                                }
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      const Text("A"),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text("Salva filtri"),
+                                onPressed: () {
+                                  applyFilters();
+                                  Navigator.maybePop(context);
+                                },
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: const Text(
+                      "Direzione",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
