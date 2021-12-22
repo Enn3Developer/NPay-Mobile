@@ -140,7 +140,7 @@ class _StatementPage extends State<StatementPage> {
     prepareMovements();
     EventManager.getInstance().addListener(EventListener(
       eventName: "reload_page",
-      function: (() {
+      function: ((noError) {
         setState(() {
           movements.clear();
           prepareMovements();

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:f_logs/model/flog/flog.dart';
 import 'package:http/http.dart' as http;
@@ -143,23 +142,23 @@ class Statement {
   }
 
   Future<void> save() async {
-    var file = File("${await _localPath}/statements");
-    var contents = jsonEncode(_statements);
-    await file.writeAsString(contents);
+    // var file = File("${await _localPath}/statements");
+    // var contents = jsonEncode(_statements);
+    // await file.writeAsString(contents);
   }
 
   Future<void> load() async {
-    try {
-      var file = File("${await _localPath}/statements");
-      var contents = await file.readAsString();
-      var statements = jsonDecode(contents);
-      for (var statement in statements) {
-        _statements.add(_Statement.fromJson(statement));
-      }
-    } catch (e, trace) {
-      FLog.severe(
-          text: "Cannot load statements", exception: e, stacktrace: trace);
-    }
+    // try {
+    //   var file = File("${await _localPath}/statements");
+    //   var contents = await file.readAsString();
+    //   var statements = jsonDecode(contents);
+    //   for (var statement in statements) {
+    //     _statements.add(_Statement.fromJson(statement));
+    //   }
+    // } catch (e, trace) {
+    //   FLog.severe(
+    //       text: "Cannot load statements", exception: e, stacktrace: trace);
+    // }
   }
 
   Future<String> get _localPath async =>
