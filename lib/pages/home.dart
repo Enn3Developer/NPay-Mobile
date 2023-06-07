@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
       String user, double amount, BuildContext context) async {
     FLog.info(text: "Sending money");
     var response = await http.get(Uri.parse(
-        "https://sunfire.a-centauri.com/npayapi/?richiesta=trasferimento&auth=${userData.pass}&utente=${userData.user}&valore=$amount&beneficiario=$user"));
+        "https://rest.a-centauri.com/npayapi/?richiesta=trasferimento&auth=${userData.pass}&utente=${userData.user}&valore=$amount&beneficiario=$user"));
     if (response.statusCode != 200) {
       showDialog(
         context: context,

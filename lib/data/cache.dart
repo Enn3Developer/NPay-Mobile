@@ -23,7 +23,7 @@ class CacheData {
   Future<bool> reload() async {
     try {
       var response = await http.get(Uri.parse(
-          "https://sunfire.a-centauri.com/npayapi/?richiesta=verifica&auth=${UserData.getInstance().getPass(_user)}&utente=$_user"));
+          "https://rest.a-centauri.com/npayapi/?richiesta=verifica&auth=${UserData.getInstance().getPass(_user)}&utente=$_user"));
       if (response.statusCode == 200) {
         var decoded = jsonDecode(response.body);
         _money = numberFormat.format(decoded['credit'].toDouble());

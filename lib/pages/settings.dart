@@ -30,46 +30,46 @@ class _SettingsPage extends State<SettingsPage> {
       body: SettingsList(
         sections: [
           SettingsSection(
-            titlePadding: const EdgeInsets.all(20),
-            title: "Sync",
+            margin: const EdgeInsetsDirectional.all(20),
+            title: const Text("Sync"),
             tiles: [
               SettingsTile.switchTile(
-                  title: "Sincronizzazione iniziale",
-                  subtitle:
-                      "Sincronizza automaticamente *tutti* gli account presenti",
+                  title: const Text("Sincronizzazione iniziale"),
+                  description:
+                      const Text("Sincronizza automaticamente *tutti* gli account presenti"),
                   leading: const Icon(Icons.sync_rounded),
-                  switchValue: pref != null
+                  enabled: pref != null
                       ? pref!.getBool("all_account") ?? false
                       : false,
                   onToggle: (value) => setState(() {
                         pref != null
                             ? pref!.setBool("all_account", value)
                             : false;
-                      })),
+                      }), initialValue: false,),
               SettingsTile.switchTile(
-                  title: "Sincronizzazione",
-                  subtitle:
-                      "Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta",
+                  title: const Text("Sincronizzazione"),
+                  description:
+                      const Text("Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta"),
                   leading: const Icon(Icons.cached_rounded),
-                  switchValue: pref != null
+                  enabled: pref != null
                       ? pref!.getBool("all_account_requested") ?? false
                       : false,
                   onToggle: (value) => setState(() {
                         pref != null
                             ? pref!.setBool("all_account_requested", value)
                             : false;
-                      })),
+                      }), initialValue: false,),
             ],
           ),
           SettingsSection(
-            titlePadding: const EdgeInsets.all(20),
-            title: "Sicurezza",
+            margin: const EdgeInsetsDirectional.all(20),
+            title: const Text("Sicurezza"),
             tiles: [
               SettingsTile.switchTile(
-                title: "Impronta digitale",
-                subtitle: "Login con impronta digitale",
+                title: const Text("Impronta digitale"),
+                description: const Text("Login con impronta digitale"),
                 leading: const Icon(Icons.fingerprint_rounded),
-                switchValue: pref != null
+                enabled: pref != null
                     ? pref!.getBool("fingerprint") ?? false
                     : false,
                 onToggle: (value) async {
@@ -79,7 +79,7 @@ class _SettingsPage extends State<SettingsPage> {
                         value && await localAuth.canCheckBiometrics);
                   }
                   setState(() {});
-                },
+                }, initialValue: false,
               ),
             ],
           )

@@ -66,7 +66,7 @@ class _Statement {
   Future<bool> reload() async {
     try {
       var response = await http.get(Uri.parse(
-          "https://sunfire.a-centauri.com/npayapi/?richiesta=estratto&auth=${UserData.getInstance().getPass(user)}&utente=$user"));
+          "https://rest.a-centauri.com/npayapi/?richiesta=estratto&auth=${UserData.getInstance().getPass(user)}&utente=$user"));
       if (response.statusCode == 200) {
         List<String> tempIn = List.empty(growable: true);
         List<String> tempOut = List.empty(growable: true);

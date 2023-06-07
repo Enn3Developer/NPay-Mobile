@@ -69,11 +69,10 @@ class _LoginPageState extends State<LoginPage> {
             log("Can check biometrics");
             authenticated = await localAuth.authenticate(
               localizedReason: "Autenticati per accedere al tuo account",
-              // message for dialog
-              biometricOnly: true,
-              useErrorDialogs: true,
-              // show error in dialog
-              stickyAuth: true, // native process
+              options: const AuthenticationOptions(
+                stickyAuth: true,
+                useErrorDialogs: true,
+              ),
             );
           }
         } catch (_) {}

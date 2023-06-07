@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:f_logs/f_logs.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:npay/data/cache.dart';
 import 'package:npay/data/statement.dart';
@@ -19,7 +18,7 @@ class Credentials {
     if (user != "" && pass != "") {
       try {
         var response = await http.get(Uri.parse(
-            "https://sunfire.a-centauri.com/npayapi/?richiesta=verifica&auth=$pass&utente=$user"));
+            "https://rest.a-centauri.com/npayapi/?richiesta=verifica&auth=$pass&utente=$user"));
         return response.statusCode == 200;
       } catch (_) {}
     }
@@ -37,7 +36,7 @@ class Credentials {
     FLog.info(text: "Checking user $user");
     try {
       var response = await http.get(Uri.parse(
-          "https://sunfire.a-centauri.com/npayapi/?richiesta=verifica&auth=pass_pRoVa_user_123456&utente=$user"));
+          "https://rest.a-centauri.com/npayapi/?richiesta=verifica&auth=pass_pRoVa_user_123456&utente=$user"));
       if (response.statusCode == 403) {
         // se qualcuno usa quella password allora F per lui e nessuno può inviargli soldi da NPay Mobile
         return jsonDecode(response.body)['detail'] == "Credenziali errate";
@@ -56,7 +55,7 @@ class Credentials {
       other is Credentials && user == other.user && pass == other.pass;
 
   @override
-  int get hashCode => hashValues(user, pass);
+  int get hashCode => Object.hash(user, pass);
 }
 
 class UserData {
