@@ -18,7 +18,7 @@ class Credentials {
     if (user != "" && pass != "") {
       try {
         var response = await http.get(Uri.parse(
-            "https://rest.a-centauri.com/npayapi/?richiesta=verifica&auth=$pass&utente=$user"));
+            "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=$pass&utente=$user"));
         return response.statusCode == 200;
       } catch (_) {}
     }
@@ -36,7 +36,7 @@ class Credentials {
     FLog.info(text: "Checking user $user");
     try {
       var response = await http.get(Uri.parse(
-          "https://rest.a-centauri.com/npayapi/?richiesta=verifica&auth=pass_pRoVa_user_123456&utente=$user"));
+          "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=pass_pRoVa_user_123456&utente=$user"));
       if (response.statusCode == 403) {
         // se qualcuno usa quella password allora F per lui e nessuno può inviargli soldi da NPay Mobile
         return jsonDecode(response.body)['detail'] == "Credenziali errate";
