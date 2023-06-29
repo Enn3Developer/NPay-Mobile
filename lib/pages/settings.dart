@@ -38,27 +38,21 @@ class _SettingsPage extends State<SettingsPage> {
                   description:
                       const Text("Sincronizza automaticamente *tutti* gli account presenti"),
                   leading: const Icon(Icons.sync_rounded),
-                  enabled: pref != null
-                      ? pref!.getBool("all_account") ?? false
-                      : false,
                   onToggle: (value) => setState(() {
                         pref != null
                             ? pref!.setBool("all_account", value)
                             : false;
-                      }), initialValue: false,),
+                      }), initialValue: pref!.getBool("all_account"),),
               SettingsTile.switchTile(
                   title: const Text("Sincronizzazione"),
                   description:
                       const Text("Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta"),
                   leading: const Icon(Icons.cached_rounded),
-                  enabled: pref != null
-                      ? pref!.getBool("all_account_requested") ?? false
-                      : false,
                   onToggle: (value) => setState(() {
                         pref != null
                             ? pref!.setBool("all_account_requested", value)
                             : false;
-                      }), initialValue: false,),
+                      }), initialValue: pref!.getBool("all_account_requested"),),
             ],
           ),
           SettingsSection(
@@ -69,9 +63,6 @@ class _SettingsPage extends State<SettingsPage> {
                 title: const Text("Impronta digitale"),
                 description: const Text("Login con impronta digitale"),
                 leading: const Icon(Icons.fingerprint_rounded),
-                enabled: pref != null
-                    ? pref!.getBool("fingerprint") ?? false
-                    : false,
                 onToggle: (value) async {
                   var localAuth = LocalAuthentication();
                   if (pref != null) {
@@ -79,7 +70,7 @@ class _SettingsPage extends State<SettingsPage> {
                         value && await localAuth.canCheckBiometrics);
                   }
                   setState(() {});
-                }, initialValue: false,
+                }, initialValue: pref!.getBool("fingerprint"),
               ),
             ],
           )
