@@ -2,7 +2,7 @@ name: Build
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
   workflow_dispatch:
 
@@ -32,14 +32,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish in release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            ./build/app/outputs/flutter-apk/app-release.apk
           token: ${{ secrets.GITHUB_TOKEN }}
 
