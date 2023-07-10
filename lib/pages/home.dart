@@ -71,12 +71,6 @@ class _HomePageState extends State<HomePage> {
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(greenColor),
                 ),
-                child: const Text(
-                  "OK",
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
                 onPressed: (() {
                   f();
                   setState(() {
@@ -84,6 +78,12 @@ class _HomePageState extends State<HomePage> {
                     Navigator.pop(context);
                   });
                 }),
+                child: const Text(
+                  "OK",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           );
@@ -115,16 +115,6 @@ class _HomePageState extends State<HomePage> {
     for (var user in userData.phoneBook) {
       users.add(
         TextButton(
-          child: Text(
-            user,
-            style: TextStyle(
-              color:
-              MediaQuery.of(context).platformBrightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 20,
-            ),
-          ),
           onLongPress: (() {
             showDialog(
                 context: context,
@@ -153,13 +143,7 @@ class _HomePageState extends State<HomePage> {
                       ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor:
-                          MaterialStateProperty.all(greenColor),
-                        ),
-                        child: const Text(
-                          "SI",
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                              MaterialStateProperty.all(greenColor),
                         ),
                         onPressed: (() {
                           setState(() {
@@ -167,6 +151,12 @@ class _HomePageState extends State<HomePage> {
                             Navigator.pop(context);
                           });
                         }),
+                        child: const Text(
+                          "SI",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -198,11 +188,20 @@ class _HomePageState extends State<HomePage> {
               }),
             );
           }),
+          child: Text(
+            user,
+            style: TextStyle(
+              color:
+                  MediaQuery.of(context).platformBrightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+              fontSize: 20,
+            ),
+          ),
         ),
       );
     }
     users.add(TextButton(
-      child: const Icon(Icons.person_add_rounded),
       onPressed: (() {
         displayTextInputDialog(
           context,
@@ -217,13 +216,14 @@ class _HomePageState extends State<HomePage> {
           }),
         );
       }),
+      child: const Icon(Icons.person_add_rounded),
     ));
     return users;
   }
 
   DateTime getDate(String raw) {
     var splitted = raw.split("|");
-    var str = splitted[0].substring(0, splitted[0].length - 1) + ":00";
+    var str = "${splitted[0].substring(0, splitted[0].length - 1)}:00";
     var day = str.substring(0, 2);
     var month = str.substring(3, 5);
     var year = str.substring(6, 10);
@@ -277,6 +277,11 @@ class _HomePageState extends State<HomePage> {
             fontSize: 18,
           ),
         ));
+      }
+      String? text = texts.last.text;
+      if (text != null) {
+        text = text.substring(0, text.length - 1);
+        texts.last = TextSpan(text: text, style: texts.last.style);
       }
       return texts;
     } catch (e, trace) {
@@ -420,42 +425,42 @@ class _HomePageState extends State<HomePage> {
                                     itemCount: userData.credentialsList.length,
                                     itemBuilder: (context, i) {
                                       return userData.credentialsList
-                                          .elementAt(i)
-                                          .user !=
-                                          userData.user
+                                                  .elementAt(i)
+                                                  .user !=
+                                              userData.user
                                           ? TextButton(
-                                        child: Text(userData
-                                            .credentialsList
-                                            .elementAt(i)
-                                            .user),
-                                        onPressed: () async {
-                                          userData.setDefaultUser(userData
-                                              .credentialsList
-                                              .elementAt(i)
-                                              .user);
-                                          userData.saveCredentialsList();
-                                          var pref =
-                                          await SharedPreferences
-                                              .getInstance();
-                                          pref.getBool(
-                                              "all_account_requested") ??
-                                              false
-                                              ? false
-                                              : await Cache.getInstance()
-                                              .reloadUser(
-                                              userData.user);
-                                          Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                  const HomePage()),
-                                                  (r) => false);
-                                        },
-                                      )
+                                              child: Text(userData
+                                                  .credentialsList
+                                                  .elementAt(i)
+                                                  .user),
+                                              onPressed: () async {
+                                                userData.setDefaultUser(userData
+                                                    .credentialsList
+                                                    .elementAt(i)
+                                                    .user);
+                                                userData.saveCredentialsList();
+                                                var pref =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                pref.getBool(
+                                                            "all_account_requested") ??
+                                                        false
+                                                    ? false
+                                                    : await Cache.getInstance()
+                                                        .reloadUser(
+                                                            userData.user);
+                                                Navigator.pushAndRemoveUntil(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            const HomePage()),
+                                                    (r) => false);
+                                              },
+                                            )
                                           : const SizedBox(
-                                        height: 0,
-                                        width: 0,
-                                      );
+                                              height: 0,
+                                              width: 0,
+                                            );
                                     },
                                   ),
                                 ));
@@ -472,13 +477,13 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (_) =>
-                                const LoginPage(autoLogin: false)),
-                                (r) => false);
+                                    const LoginPage(autoLogin: false)),
+                            (r) => false);
                         break;
                     }
                   },
                   itemBuilder: (BuildContext context) =>
-                  <PopupMenuEntry<PopupAccount>>[
+                      <PopupMenuEntry<PopupAccount>>[
                     PopupMenuItem(
                       value: PopupAccount.change,
                       child: RichText(
@@ -488,20 +493,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.people_alt_rounded,
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Cambia account",
                               style: TextStyle(
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                           ],
@@ -517,20 +522,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.person_add_rounded,
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Aggiungi account",
                               style: TextStyle(
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                           ],
@@ -546,20 +551,20 @@ class _HomePageState extends State<HomePage> {
                               child: Icon(
                                 Icons.logout_rounded,
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                             TextSpan(
                               text: " Esci",
                               style: TextStyle(
                                 color:
-                                MediaQuery.of(context).platformBrightness ==
-                                    Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                           ],
@@ -575,10 +580,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Center(
                   child: Text(
-                    "È un piacere rivederti,",
+                    "Benvenuto",
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
-                          Brightness.dark
+                              Brightness.dark
                           ? Colors.white
                           : Colors.black,
                       fontSize: 26,
@@ -591,10 +596,11 @@ class _HomePageState extends State<HomePage> {
                   userData.user,
                   style: TextStyle(
                     color: MediaQuery.of(context).platformBrightness ==
-                        Brightness.dark
+                            Brightness.dark
                         ? Colors.white
                         : Colors.black,
                     fontSize: 26,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -605,9 +611,10 @@ class _HomePageState extends State<HomePage> {
                     Cache.getInstance().getCacheData(userData.user).money,
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
-                          Brightness.dark
+                              Brightness.dark
                           ? Colors.white
                           : Colors.black,
+                      fontWeight: FontWeight.bold,
                       fontSize: 30,
                     ),
                   ),
@@ -621,6 +628,66 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     children: getUsers(),
                   ),
+                ),
+              ),
+              Card(
+                child: Column(
+                  children: [
+                    const ListTile(
+                      title: Text("Bolletta RG Energy",
+                          style: TextStyle(
+                            fontSize: 18,
+                          )),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: "Fisse: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                "${Cache.getInstance().getCacheData(userData.user).rgData.fixed}\n",
+                          ),
+                          const TextSpan(
+                            text: "Variabili: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                "${Cache.getInstance().getCacheData(userData.user).rgData.variable}\n",
+                          ),
+                          const TextSpan(
+                            text: "Totale: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: Cache.getInstance()
+                                .getCacheData(userData.user)
+                                .rgData
+                                .total,
+                          ),
+                        ],
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    ButtonBar(
+                      children: [
+                        TextButton(
+                            onPressed: () {},
+                            child: const Text("Paga bolletta")),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               Card(

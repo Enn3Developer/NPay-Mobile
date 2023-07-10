@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> login() async {
     var userData = UserData.getInstance();
     if (await userData.addAccount(userController.text, passController.text)) {
-      Cache.getInstance().addUser(userData.user);
+      await Cache.getInstance().addUser(userData.user);
       var pref = await SharedPreferences.getInstance();
       pref.getBool("all_account") ?? false
           ? await Cache.getInstance().reloadAll()
@@ -88,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const HomePage()),
-                  (r) => false);
+              (r) => false);
         });
       }
     } else {

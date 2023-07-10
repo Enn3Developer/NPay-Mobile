@@ -152,7 +152,7 @@ class UserData {
       for (int i = 1; i < lines.length; i++) {
         var credentials = Credentials.fromString(lines[i]);
         await addAccountFromCredentials(credentials);
-        Cache.getInstance().addUser(credentials.user);
+        await Cache.getInstance().addUser(credentials.user);
       }
       if (lines.isNotEmpty && await Credentials.checkUser(lines[0])) {
         _defaultUser = lines[0];
