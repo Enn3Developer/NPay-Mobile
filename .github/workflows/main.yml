@@ -1,14 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Build
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   release:
     types: [published]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -27,7 +22,7 @@ jobs:
         uses: subosito/flutter-action@v1
         with:
           flutter-version: '3.10.3'
-      - name: Build project # This would actually build your project, using zip for an example artifact    
+      - name: Build project
         run: |
           flutter pub get
           flutter build apk --split-per-abi
