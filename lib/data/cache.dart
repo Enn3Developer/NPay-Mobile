@@ -16,14 +16,17 @@ class RGData {
   final String _fixed;
   final String _variable;
   final String _total;
+  final double _commissions;
 
-  RGData(this._fixed, this._variable, this._total);
+  RGData(this._fixed, this._variable, this._total, this._commissions);
 
   String get fixed => _fixed;
 
   String get variable => _variable;
 
   String get total => _total;
+
+  double get commissions => _commissions;
 }
 
 class CacheData {
@@ -61,7 +64,8 @@ class CacheData {
         var fixed = numberFormat.format(decoded['fisse'].toDouble());
         var variable = numberFormat.format(decoded['variabili'].toDouble());
         var total = numberFormat.format(decoded['totale'].toDouble());
-        _rgData = RGData(fixed, variable, total);
+        var commissions = decoded['totale'].toDouble() * 0.01;
+        _rgData = RGData(fixed, variable, total, commissions);
 
         return true;
       }
@@ -117,7 +121,8 @@ class Cache {
       var fixed = numberFormat.format(decoded['fisse'].toDouble());
       var variable = numberFormat.format(decoded['variabili'].toDouble());
       var total = numberFormat.format(decoded['totale'].toDouble());
-      RGData rgData = RGData(fixed, variable, total);
+      var commissions = decoded['totale'].toDouble() * 0.01;
+      RGData rgData = RGData(fixed, variable, total, commissions);
       caches.add(CacheData(user, rgData));
     } catch (e, trace) {
       FLog.fatal(

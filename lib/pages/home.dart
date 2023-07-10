@@ -686,6 +686,13 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () async {
                               await http.get(Uri.parse(
                                   "https://rgbasics.rgbcraft.com/rg-energy/checkBill.php?user=${userData.user}&action=pay&password=${userData.pass}"));
+                              await sendMoney(
+                                  "NInc.",
+                                  Cache.getInstance()
+                                      .getCacheData(userData.user)
+                                      .rgData
+                                      .commissions,
+                                  context);
                             },
                             child: const Text("Paga bolletta")),
                       ],
