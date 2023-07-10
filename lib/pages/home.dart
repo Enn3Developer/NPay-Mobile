@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:npay/data/cache.dart';
 import 'package:npay/data/user_data.dart';
 import 'package:npay/pages/login.dart';
@@ -19,6 +20,9 @@ enum PopupAccount {
   add,
   exit,
 }
+
+var numberFormat = NumberFormat.currency(
+    locale: 'it', name: 'CLF', symbol: 'IC', decimalDigits: 2);
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -669,10 +673,20 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           TextSpan(
-                            text: Cache.getInstance()
+                            text:
+                                "${Cache.getInstance().getCacheData(userData.user).rgData.total}\n",
+                          ),
+                          const TextSpan(
+                            text: "Commissioni: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextSpan(
+                            text: numberFormat.format(Cache.getInstance()
                                 .getCacheData(userData.user)
                                 .rgData
-                                .total,
+                                .commissions),
                           ),
                         ],
                         style: const TextStyle(
