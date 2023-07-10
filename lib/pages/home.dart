@@ -683,7 +683,10 @@ class _HomePageState extends State<HomePage> {
                     ButtonBar(
                       children: [
                         TextButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await http.get(Uri.parse(
+                                  "https://rgbasics.rgbcraft.com/rg-energy/checkBill.php?user=${userData.user}&action=pay&password=${userData.pass}"));
+                            },
                             child: const Text("Paga bolletta")),
                       ],
                     ),
