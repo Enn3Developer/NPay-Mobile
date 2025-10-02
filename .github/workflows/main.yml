@@ -21,7 +21,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v1
         with:
-          flutter-version: '3.10.3'
+          flutter-version: '3.35.3'
       - name: Build project
         run: |
           flutter pub get
