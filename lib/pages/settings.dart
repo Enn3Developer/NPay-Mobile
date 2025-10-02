@@ -4,7 +4,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _SettingsPage();
@@ -34,25 +34,27 @@ class _SettingsPage extends State<SettingsPage> {
             title: const Text("Sync"),
             tiles: [
               SettingsTile.switchTile(
-                  title: const Text("Sincronizzazione iniziale"),
-                  description:
-                      const Text("Sincronizza automaticamente *tutti* gli account presenti"),
-                  leading: const Icon(Icons.sync_rounded),
-                  onToggle: (value) => setState(() {
-                        pref != null
-                            ? pref!.setBool("all_account", value)
-                            : false;
-                      }), initialValue: pref!.getBool("all_account"),),
+                title: const Text("Sincronizzazione iniziale"),
+                description: const Text(
+                    "Sincronizza automaticamente *tutti* gli account presenti"),
+                leading: const Icon(Icons.sync_rounded),
+                onToggle: (value) => setState(() {
+                  pref != null ? pref!.setBool("all_account", value) : false;
+                }),
+                initialValue: pref!.getBool("all_account"),
+              ),
               SettingsTile.switchTile(
-                  title: const Text("Sincronizzazione"),
-                  description:
-                      const Text("Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta"),
-                  leading: const Icon(Icons.cached_rounded),
-                  onToggle: (value) => setState(() {
-                        pref != null
-                            ? pref!.setBool("all_account_requested", value)
-                            : false;
-                      }), initialValue: pref!.getBool("all_account_requested"),),
+                title: const Text("Sincronizzazione"),
+                description: const Text(
+                    "Sincronizza *tutti* gli account quando la sincronizzazione viene richiesta"),
+                leading: const Icon(Icons.cached_rounded),
+                onToggle: (value) => setState(() {
+                  pref != null
+                      ? pref!.setBool("all_account_requested", value)
+                      : false;
+                }),
+                initialValue: pref!.getBool("all_account_requested"),
+              ),
             ],
           ),
           SettingsSection(
@@ -70,7 +72,8 @@ class _SettingsPage extends State<SettingsPage> {
                         value && await localAuth.canCheckBiometrics);
                   }
                   setState(() {});
-                }, initialValue: pref!.getBool("fingerprint"),
+                },
+                initialValue: pref!.getBool("fingerprint"),
               ),
             ],
           )

@@ -5,7 +5,7 @@ import 'utils/npay_color.dart';
 
 void main() {
   init();
-  const duration = Duration(seconds: 5);
+  // const duration = Duration(seconds: 5);
   // Timer.periodic(duration, (timer) {
   //   FLog.exportLogs();
   // });
@@ -16,7 +16,7 @@ void main() {
   }
 }
 
-init() {
+void init() {
   // LogsConfig config = FLog.getDefaultConfigurations()
   //   ..isDevelopmentDebuggingEnabled = true
   //   ..timestampFormat = TimestampFormat.TIME_FORMAT_FULL_3
@@ -35,7 +35,7 @@ init() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

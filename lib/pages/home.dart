@@ -25,7 +25,7 @@ var numberFormat = NumberFormat.currency(
     locale: 'it', name: 'CLF', symbol: 'IC', decimalDigits: 2);
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<StatefulWidget> createState() => _HomePageState();
@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
     var response = await http.get(Uri.parse(
         "https://rest.rgbcraft.com/npayapi/?richiesta=trasferimento&auth=${userData.pass}&utente=${userData.user}&valore=$amount&beneficiario=$user"));
     if (response.statusCode != 200) {
+      if (!context.mounted) return;
       showDialog(
         context: context,
         builder: (context) {
@@ -110,6 +111,7 @@ class _HomePageState extends State<HomePage> {
         },
       );
     } else {
+      if (!context.mounted) return;
       showDialog(
         context: context,
         builder: (context) {
@@ -362,7 +364,7 @@ class _HomePageState extends State<HomePage> {
             money = Cache.getInstance().getCacheData(userData.user)?.money ??
                 "ERROR CAN'T GET MONEY";
           });
-        } catch (e, trace) {
+        } catch (e) {
           // FLog.fatal(
           //     text: "Error on loading money", exception: e, stacktrace: trace);
         }
@@ -465,6 +467,7 @@ class _HomePageState extends State<HomePage> {
                                                     : await Cache.getInstance()
                                                         .reloadUser(
                                                             userData.user);
+                                                if (!context.mounted) return;
                                                 Navigator.pushAndRemoveUntil(
                                                     context,
                                                     MaterialPageRoute(
@@ -698,7 +701,7 @@ class _HomePageState extends State<HomePage> {
       // log("Error loading page", exception: e, stacktrace: trace);
       return Scaffold(
         body: Center(
-          child: Text("Error type ${trace}"),
+          child: Text("Error type $trace"),
         ),
       );
     }

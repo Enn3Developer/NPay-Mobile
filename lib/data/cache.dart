@@ -54,7 +54,7 @@ class CacheData {
       } else {
         log("no good response");
       }
-    } catch (e, trace) {
+    } catch (e) {
       // FLog.fatal(
       //   text: "Error reloading cache for $_user",
       //   exception: e,
@@ -94,7 +94,7 @@ class Cache {
       var cache = CacheData(user);
       await cache.reload();
       caches.add(cache);
-    } catch (e, trace) {
+    } catch (e) {
       // FLog.fatal(
       //   text: "Error getting data for $user",
       //   exception: e,

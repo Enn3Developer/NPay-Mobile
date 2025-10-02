@@ -36,7 +36,7 @@ class EventManager {
         // il listener "ascolta" l'evento triggerato
         try {
           listener.function(event.data);
-        } catch (e, trace) {
+        } catch (e) {
           // log("Error for event ${event.name}", exception: e);
           // log("Trace", exception: e, stacktrace: trace);
         }

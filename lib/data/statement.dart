@@ -2,17 +2,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:npay/data/user_data.dart';
-import 'package:path_provider/path_provider.dart';
 
-class _Statement {
+class StatementData {
   final List<String> _statementIn = List.empty(growable: true);
   final List<String> _statementOut = List.empty(growable: true);
   final String user;
 
-  _Statement({required this.user});
+  StatementData({required this.user});
 
-  factory _Statement.fromJson(dynamic json) {
-    var statement = _Statement(user: json['user']);
+  factory StatementData.fromJson(dynamic json) {
+    var statement = StatementData(user: json['user']);
     json['in'].forEach((element) {
       statement._statementIn.add(element);
     });
@@ -84,7 +83,7 @@ class _Statement {
         compareAndAdjust(tempIn, tempOut);
         return true;
       }
-    } catch (e, trace) {
+    } catch (e) {
       // FLog.fatal(
       //     text: "Error reloading statements for $user",
       //     exception: e,
@@ -99,22 +98,22 @@ class Statement {
 
   static final Statement _instance = Statement._internal();
 
-  final List<_Statement> _statements = List.empty(growable: true);
+  final List<StatementData> _statements = List.empty(growable: true);
 
   static Statement getInstance() => _instance;
 
-  _Statement getUser(String user) {
+  StatementData getUser(String user) {
     for (var statement in _statements) {
       if (statement.user == user) {
         return statement;
       }
     }
-    var statement = _Statement(user: user);
+    var statement = StatementData(user: user);
     _statements.add(statement);
     return statement;
   }
 
-  void addUser(String user) => _statements.add(_Statement(user: user));
+  void addUser(String user) => _statements.add(StatementData(user: user));
 
   void removeUser(String user) {
     for (var statement in _statements) {
@@ -160,6 +159,6 @@ class Statement {
     // }
   }
 
-  Future<String> get _localPath async =>
-      (await getApplicationDocumentsDirectory()).path;
+// Future<String> get _localPath async =>
+//     (await getApplicationDocumentsDirectory()).path;
 }

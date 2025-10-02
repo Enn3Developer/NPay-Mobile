@@ -14,7 +14,7 @@ import '../utils/npay_color.dart';
 class LoginPage extends StatefulWidget {
   final bool autoLogin;
 
-  const LoginPage({Key? key, required this.autoLogin}) : super(key: key);
+  const LoginPage({super.key, required this.autoLogin});
 
   @override
   State<StatefulWidget> createState() => _LoginPageState();
