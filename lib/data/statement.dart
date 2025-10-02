@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:f_logs/model/flog/flog.dart';
 import 'package:http/http.dart' as http;
 import 'package:npay/data/user_data.dart';
 import 'package:path_provider/path_provider.dart';
@@ -86,10 +85,10 @@ class _Statement {
         return true;
       }
     } catch (e, trace) {
-      FLog.fatal(
-          text: "Error reloading statements for $user",
-          exception: e,
-          stacktrace: trace);
+      // FLog.fatal(
+      //     text: "Error reloading statements for $user",
+      //     exception: e,
+      //     stacktrace: trace);
     }
     return false;
   }

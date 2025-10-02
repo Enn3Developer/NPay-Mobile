@@ -1,10 +1,3 @@
-import 'dart:async';
-
-import 'package:f_logs/model/flog/flog.dart';
-import 'package:f_logs/model/flog/flog_config.dart';
-import 'package:f_logs/utils/formatter/field_name.dart';
-import 'package:f_logs/utils/formatter/formate_type.dart';
-import 'package:f_logs/utils/timestamp/timestamp_format.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login.dart';
@@ -24,21 +17,21 @@ void main() {
 }
 
 init() {
-  LogsConfig config = FLog.getDefaultConfigurations()
-    ..isDevelopmentDebuggingEnabled = true
-    ..timestampFormat = TimestampFormat.TIME_FORMAT_FULL_3
-    ..formatType = FormatType.FORMAT_CUSTOM
-    ..fieldOrderFormatCustom = [
-      FieldName.TIMESTAMP,
-      FieldName.LOG_LEVEL,
-      FieldName.CLASSNAME,
-      FieldName.METHOD_NAME,
-      FieldName.TEXT,
-      FieldName.EXCEPTION,
-      FieldName.STACKTRACE
-    ];
-
-  FLog.applyConfigurations(config);
+  // LogsConfig config = FLog.getDefaultConfigurations()
+  //   ..isDevelopmentDebuggingEnabled = true
+  //   ..timestampFormat = TimestampFormat.TIME_FORMAT_FULL_3
+  //   ..formatType = FormatType.FORMAT_CUSTOM
+  //   ..fieldOrderFormatCustom = [
+  //     FieldName.TIMESTAMP,
+  //     FieldName.LOG_LEVEL,
+  //     FieldName.CLASSNAME,
+  //     FieldName.METHOD_NAME,
+  //     FieldName.TEXT,
+  //     FieldName.EXCEPTION,
+  //     FieldName.STACKTRACE
+  //   ];
+  //
+  // FLog.applyConfigurations(config);
 }
 
 class MyApp extends StatelessWidget {

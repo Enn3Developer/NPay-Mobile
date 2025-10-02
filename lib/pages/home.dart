@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:math' hide log;
 
-import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -106,7 +105,17 @@ class _HomePageState extends State<HomePage> {
         builder: (context) {
           return const AlertDialog(
             title: Text("Errore"),
-            content: Text("È avvenuto un errore durante l'ultimo pagamento"),
+            content: Text("È avvenuto un errore durante il pagamento."),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const AlertDialog(
+            title: Text("Successo"),
+            content: Text("Il pagamento è avvenuto con successo."),
           );
         },
       );
@@ -291,11 +300,11 @@ class _HomePageState extends State<HomePage> {
       }
       return texts;
     } catch (e, trace) {
-      FLog.fatal(
-          text: "Error on getting last movements",
-          exception: e,
-          stacktrace: trace);
-      return [TextSpan(text: "ERROR ${trace}")];
+      // FLog.fatal(
+      //     text: "Error on getting last movements",
+      //     exception: e,
+      //     stacktrace: trace);
+      return [TextSpan(text: "ERROR $trace")];
     }
   }
 
@@ -314,9 +323,9 @@ class _HomePageState extends State<HomePage> {
           ? Cache.getInstance().reloadAll()
           : Cache.getInstance().reloadUser(userData.user);
     } catch (e) {
-      FLog.fatal(
-          text: "Error on asking reloading for ${userData.user}; trying anyway",
-          exception: e);
+      // FLog.fatal(
+      //     text: "Error on asking reloading for ${userData.user}; trying anyway",
+      //     exception: e);
       try {
         Cache.getInstance().reloadUser(userData.user);
       } catch (e) {
@@ -354,8 +363,8 @@ class _HomePageState extends State<HomePage> {
                 "ERROR CAN'T GET MONEY";
           });
         } catch (e, trace) {
-          FLog.fatal(
-              text: "Error on loading money", exception: e, stacktrace: trace);
+          // FLog.fatal(
+          //     text: "Error on loading money", exception: e, stacktrace: trace);
         }
       }),
     ));
@@ -373,7 +382,7 @@ class _HomePageState extends State<HomePage> {
     try {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("NPay"),
+          title: const Text("nPay"),
           automaticallyImplyLeading: false,
           actions: [
             IconButton(

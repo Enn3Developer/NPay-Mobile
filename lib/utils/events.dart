@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:f_logs/f_logs.dart';
-
 class Event<T> {
   final String name;
   final T data;

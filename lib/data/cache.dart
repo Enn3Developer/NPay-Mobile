@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:f_logs/f_logs.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:npay/data/statement.dart';
@@ -44,7 +43,7 @@ class CacheData {
           "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=${UserData.getInstance().getPass(_user)}&utente=$_user"));
       if (response.statusCode == 200) {
         log("good response");
-        log("${response.body}");
+        log(response.body);
         var decoded = jsonDecode(response.body);
         _money = numberFormat.format(decoded['credit'].toDouble());
         await Statement.getInstance().reloadUser(_user);
@@ -56,11 +55,11 @@ class CacheData {
         log("no good response");
       }
     } catch (e, trace) {
-      FLog.fatal(
-        text: "Error reloading cache for $_user",
-        exception: e,
-        stacktrace: trace,
-      );
+      // FLog.fatal(
+      //   text: "Error reloading cache for $_user",
+      //   exception: e,
+      //   stacktrace: trace,
+      // );
     }
     return false;
   }
@@ -96,11 +95,11 @@ class Cache {
       await cache.reload();
       caches.add(cache);
     } catch (e, trace) {
-      FLog.fatal(
-        text: "Error getting data for $user",
-        exception: e,
-        stacktrace: trace,
-      );
+      // FLog.fatal(
+      //   text: "Error getting data for $user",
+      //   exception: e,
+      //   stacktrace: trace,
+      // );
     }
   }
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:f_logs/f_logs.dart';
 import 'package:http/http.dart' as http;
 import 'package:npay/data/cache.dart';
 import 'package:npay/data/statement.dart';

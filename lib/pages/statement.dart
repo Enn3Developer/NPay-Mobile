@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:npay/data/cache.dart';
@@ -30,7 +29,7 @@ class _Movement {
 }
 
 class StatementPage extends StatefulWidget {
-  const StatementPage({Key? key}) : super(key: key);
+  const StatementPage({super.key});
 
   @override
   State<StatefulWidget> createState() => _StatementPage();
@@ -95,13 +94,13 @@ class _StatementPage extends State<StatementPage> {
   }
 
   void prepareMovements() {
-    // var cache = Cache.getInstance().getCacheData(UserData.getInstance().user);
-    // for (var raw in cache.statementIn) {
-    //   movements.add(rawToMovement(raw, greenColor));
-    // }
-    // for (var raw in cache.statementOut) {
-    //   movements.add(rawToMovement(raw, redColor));
-    // }
+    var cache = Cache.getInstance().getCacheData(UserData.getInstance().user);
+    for (var raw in cache?.statementIn ?? []) {
+      movements.add(rawToMovement(raw, greenColor));
+    }
+    for (var raw in cache?.statementOut ?? []) {
+      movements.add(rawToMovement(raw, redColor));
+    }
   }
 
   List<DataRow> getRows() {
