@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:f_logs/f_logs.dart';
@@ -14,14 +15,16 @@ class Credentials {
   const Credentials(this.user, this.pass);
 
   Future<bool> isValid() async {
-    FLog.info(text: "Validating user $user");
+    log("Validating user $user");
     if (user != "" && pass != "") {
       try {
         var response = await http.get(Uri.parse(
             "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=$pass&utente=$user"));
+        log(response.body);
         return response.statusCode == 200;
       } catch (_) {}
     }
+    log("Invalid account: $user");
     return false;
   }
 
@@ -33,7 +36,7 @@ class Credentials {
   static Credentials empty() => const Credentials("", "");
 
   static Future<bool> checkUser(String user) async {
-    FLog.info(text: "Checking user $user");
+    log("Checking user $user");
     try {
       var response = await http.get(Uri.parse(
           "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=pass_pRoVa_user_123456&utente=$user"));
@@ -42,7 +45,7 @@ class Credentials {
         return jsonDecode(response.body)['detail'] == "Credenziali errate";
       }
     } catch (e) {
-      FLog.fatal(text: "Error on checking", exception: e);
+      // log("Error on checking", exception: e);
     }
     return false;
   }
@@ -103,7 +106,7 @@ class UserData {
       addAccountFromCredentials(Credentials(user, pass));
 
   Future<bool> addAccountFromCredentials(Credentials credentials) async {
-    FLog.info(text: "Adding account ${credentials.user}");
+    log("Adding account ${credentials.user}");
     if (!credentialsList.contains(credentials) && await credentials.isValid()) {
       Statement.getInstance().addUser(credentials.user);
       _defaultUser =
@@ -115,10 +118,10 @@ class UserData {
   }
 
   void removeAccount(String user) {
-    FLog.info(text: "Removing account: $user");
+    log("Removing account: $user");
     Statement.getInstance().removeUser(user);
     if (user == _defaultUser) {
-      FLog.info(text: "User is default");
+      log("User is default");
       removeDefaultUser();
     }
     for (int i = 0; i < credentialsList.length; i++) {
@@ -144,7 +147,7 @@ class UserData {
   }
 
   Future<void> loadCredentialsList() async {
-    FLog.info(text: "Loading credentials");
+    log("Loading credentials");
     try {
       final file = File("${await _localPath}/credentials");
       final contents = await file.readAsString();
@@ -169,7 +172,7 @@ class UserData {
   }
 
   Future<void> loadPhoneBook() async {
-    FLog.info(text: "Loading phonebook");
+    log("Loading phonebook");
     try {
       final file = File("${await _localPath}/phonebook");
       final contents = await file.readAsString();

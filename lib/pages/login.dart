@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       userData.saveAll();
       log("userData.user: ${userData.user}");
       setState(() {
-        FLog.info(text: "Logging in");
+        log("Logging in");
         isError = false;
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (_) => const HomePage()), (r) => false);
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
             : await Cache.getInstance().reloadUser(userData.user);
         userData.saveAll();
         setState(() {
-          FLog.info(text: "Auto logging in");
+          log("Auto logging in");
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const HomePage()),
@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void getPage() {
     if (loadPage) {
-      FLog.info(text: "Rendering page");
+      log("Rendering page");
       list = [
         Container(
           height: 150.0,

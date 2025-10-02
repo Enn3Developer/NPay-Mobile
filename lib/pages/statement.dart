@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -43,7 +45,7 @@ class _StatementPage extends State<StatementPage> {
 
   DateTime getDate(String raw) {
     var splitted = raw.split("|");
-    var str = splitted[0].substring(0, splitted[0].length - 1) + ":00";
+    var str = "${splitted[0].substring(0, splitted[0].length - 1)}:00";
     var day = str.substring(0, 2);
     var month = str.substring(3, 5);
     var year = str.substring(6, 10);
@@ -93,13 +95,13 @@ class _StatementPage extends State<StatementPage> {
   }
 
   void prepareMovements() {
-    var cache = Cache.getInstance().getCacheData(UserData.getInstance().user);
-    for (var raw in cache.statementIn) {
-      movements.add(rawToMovement(raw, greenColor));
-    }
-    for (var raw in cache.statementOut) {
-      movements.add(rawToMovement(raw, redColor));
-    }
+    // var cache = Cache.getInstance().getCacheData(UserData.getInstance().user);
+    // for (var raw in cache.statementIn) {
+    //   movements.add(rawToMovement(raw, greenColor));
+    // }
+    // for (var raw in cache.statementOut) {
+    //   movements.add(rawToMovement(raw, redColor));
+    // }
   }
 
   List<DataRow> getRows() {
@@ -147,7 +149,7 @@ class _StatementPage extends State<StatementPage> {
         });
       }),
     ));
-    FLog.info(text: "Initialized");
+    log("Initialized");
   }
 
   @override
@@ -177,7 +179,7 @@ class _StatementPage extends State<StatementPage> {
               sortColumnIndex: index,
               sortAscending: isAscending,
               headingRowColor:
-                  MaterialStateColor.resolveWith((states) => blueColor),
+                  WidgetStateColor.resolveWith((states) => blueColor),
               columns: <DataColumn>[
                 DataColumn(
                   onSort: (columnIndex, ascending) {

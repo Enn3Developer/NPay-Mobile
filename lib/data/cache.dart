@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:f_logs/f_logs.dart';
 import 'package:http/http.dart' as http;
@@ -34,40 +35,25 @@ class CacheData {
   List<String> _statementOut = List.empty(growable: true);
   final String _user;
   String _money = "0";
-  RGData _rgData;
 
-  CacheData(this._user, this._rgData);
+  CacheData(this._user);
 
   Future<bool> reload() async {
     try {
       var response = await http.get(Uri.parse(
-          "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=${UserData
-              .getInstance().getPass(_user)}&utente=$_user"));
+          "https://rest.rgbcraft.com/npayapi/?richiesta=verifica&auth=${UserData.getInstance().getPass(_user)}&utente=$_user"));
       if (response.statusCode == 200) {
+        log("good response");
+        log("${response.body}");
         var decoded = jsonDecode(response.body);
         _money = numberFormat.format(decoded['credit'].toDouble());
         await Statement.getInstance().reloadUser(_user);
         var statements = Statement.getInstance().getUser(_user);
         _statementIn = statements.statementIn;
         _statementOut = statements.statementOut;
-
-        response = await http.get(Uri.parse(
-            "https://rgbasics.rgbcraft.com/rg-energy/checkBill.php?user=$_user"));
-        if (response.statusCode != 200) {
-          throw Error();
-        }
-        var data = response.body
-            .replaceAll("[", "")
-            .replaceAll("]", "")
-            .replaceAll("=", ":");
-        decoded = jsonDecode(data.replaceRange(data.length - 2, null, "}"));
-        var fixed = numberFormat.format(decoded['fisse'].toDouble());
-        var variable = numberFormat.format(decoded['variabili'].toDouble());
-        var total = numberFormat.format(decoded['totale'].toDouble());
-        var commissions = decoded['totale'].toDouble() * 0.01;
-        _rgData = RGData(fixed, variable, total, commissions);
-
         return true;
+      } else {
+        log("no good response");
       }
     } catch (e, trace) {
       FLog.fatal(
@@ -84,8 +70,6 @@ class CacheData {
   List<String> get statementIn => _statementIn;
 
   List<String> get statementOut => _statementOut;
-
-  RGData get rgData => _rgData;
 }
 
 class Cache {
@@ -97,36 +81,23 @@ class Cache {
   static Cache getInstance() =>
       _instance; // Stessa cosa di sopra (`Cache._internal()`)
 
-  CacheData getCacheData(String user) {
+  CacheData? getCacheData(String user) {
     for (var cache in caches) {
       if (cache._user == user) {
         return cache;
       }
     }
-    throw NoCacheData;
+    return null;
   }
 
   Future<void> addUser(String user) async {
     try {
-      var response = await http.get(Uri.parse(
-          "https://rgbasics.rgbcraft.com/rg-energy/checkBill.php?user=$user"));
-      if (response.statusCode != 200) {
-        throw Error();
-      }
-      var data = response.body
-          .replaceAll("[", "")
-          .replaceAll("]", "")
-          .replaceAll("=", ":");
-      var decoded = jsonDecode(data.replaceRange(data.length - 2, null, "}"));
-      var fixed = numberFormat.format(decoded['fisse'].toDouble());
-      var variable = numberFormat.format(decoded['variabili'].toDouble());
-      var total = numberFormat.format(decoded['totale'].toDouble());
-      var commissions = decoded['totale'].toDouble() * 0.01;
-      RGData rgData = RGData(fixed, variable, total, commissions);
-      caches.add(CacheData(user, rgData));
+      var cache = CacheData(user);
+      await cache.reload();
+      caches.add(cache);
     } catch (e, trace) {
       FLog.fatal(
-        text: "Error getting rgdata for $user",
+        text: "Error getting data for $user",
         exception: e,
         stacktrace: trace,
       );
@@ -134,7 +105,12 @@ class Cache {
   }
 
   Future<bool> reloadUser(String user) async {
-    FLog.info(text: "Reloading user $user");
+    log("Reloading user $user");
+    log("Cache is empty: ${caches.isEmpty}");
+    if (caches.isEmpty) {
+      caches.add(CacheData(user));
+    }
+
     for (var cache in caches) {
       if (cache._user == user) {
         var noError = await cache.reload();
@@ -147,7 +123,7 @@ class Cache {
   }
 
   Future<bool> reloadAll() async {
-    FLog.info(text: "Reloading all");
+    log("Reloading all; len: ${caches.length}");
     var noError = true;
     for (var cache in caches) {
       noError &= await cache.reload();

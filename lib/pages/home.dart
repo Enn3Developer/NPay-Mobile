@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:f_logs/f_logs.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class _HomePageState extends State<HomePage> {
             actions: <Widget>[
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(redColor),
+                  backgroundColor: WidgetStateProperty.all(redColor),
                 ),
                 child: const Text(
                   "TORNA INDIETRO",
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
               ),
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(greenColor),
+                  backgroundColor: WidgetStateProperty.all(greenColor),
                 ),
                 onPressed: (() {
                   f();
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> sendMoney(
       String user, double amount, BuildContext context) async {
-    FLog.info(text: "Sending money");
+    log("Sending money");
     var response = await http.get(Uri.parse(
         "https://rest.rgbcraft.com/npayapi/?richiesta=trasferimento&auth=${userData.pass}&utente=${userData.user}&valore=$amount&beneficiario=$user"));
     if (response.statusCode != 200) {
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> getUsers() {
-    FLog.info(text: "Getting users");
+    log("Getting users");
     List<Widget> users = [];
     for (var user in userData.phoneBook) {
       users.add(
@@ -130,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                     actions: <Widget>[
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(redColor),
+                          backgroundColor: WidgetStateProperty.all(redColor),
                         ),
                         child: const Text(
                           "NO",
@@ -146,8 +147,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(greenColor),
+                          backgroundColor: WidgetStateProperty.all(greenColor),
                         ),
                         onPressed: (() {
                           setState(() {
@@ -241,15 +241,17 @@ class _HomePageState extends State<HomePage> {
       return a <= b ? a : b;
     }
 
-    FLog.info(text: "Getting last movements");
-    var _in = Cache.getInstance().getCacheData(userData.user).statementIn;
-    var _out = Cache.getInstance().getCacheData(userData.user).statementOut;
+    log("Getting last movements");
+    var statementIn =
+        Cache.getInstance().getCacheData(userData.user)?.statementIn ?? [];
+    var statementOut =
+        Cache.getInstance().getCacheData(userData.user)?.statementOut ?? [];
     List<String> total = List.empty(growable: true);
     String lastMovements = "";
-    for (var raw in _in) {
+    for (var raw in statementIn) {
       total.add(raw);
     }
-    for (var raw in _out) {
+    for (var raw in statementOut) {
       total.add(raw);
     }
     total.sort((a, b) {
@@ -264,11 +266,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<TextSpan> getLastMovementsText() {
-    FLog.info(text: "Getting last movements");
+    log("Getting last movements");
     try {
       var lastMovements = getLastMovements();
       List<TextSpan> texts = List.empty(growable: true);
-      FLog.info(text: "lastMovements: ${lastMovements.split('\n')}");
+      log("lastMovements: ${lastMovements.split('\n')}");
       for (var last in lastMovements.split('\n')) {
         var color = last.contains('+') ? greenColor : redColor;
         // Rimuove tutti i segni positivi e negativi
@@ -293,12 +295,12 @@ class _HomePageState extends State<HomePage> {
           text: "Error on getting last movements",
           exception: e,
           stacktrace: trace);
-      return [TextSpan(text: "ERROR ${e.runtimeType}")];
+      return [TextSpan(text: "ERROR ${trace}")];
     }
   }
 
   void addAccount() {
-    FLog.info(text: "Adding account");
+    log("Adding account");
     userData.removeDefaultUser();
     userData.saveCredentialsList();
     Navigator.push(context,
@@ -318,7 +320,7 @@ class _HomePageState extends State<HomePage> {
       try {
         Cache.getInstance().reloadUser(userData.user);
       } catch (e) {
-        FLog.fatal(text: "Error on asking the second time", exception: e);
+        // log("Error on asking the second time", exception: e);
       }
     }
   }
@@ -348,7 +350,8 @@ class _HomePageState extends State<HomePage> {
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
             }
-            money = Cache.getInstance().getCacheData(userData.user).money;
+            money = Cache.getInstance().getCacheData(userData.user)?.money ??
+                "ERROR CAN'T GET MONEY";
           });
         } catch (e, trace) {
           FLog.fatal(
@@ -360,7 +363,7 @@ class _HomePageState extends State<HomePage> {
     Timer.periodic(duration, (timer) async {
       await reloadPage();
     });
-    FLog.info(text: "Initialized");
+    log("Initialized");
   }
 
   // l'istruzione sotto serve ad evitare possibili errori di tema
@@ -612,7 +615,8 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.only(top: 20, bottom: 20),
                 child: Center(
                   child: Text(
-                    Cache.getInstance().getCacheData(userData.user).money,
+                    Cache.getInstance().getCacheData(userData.user)?.money ??
+                        "ERROR CAN'T GET MONEY",
                     style: TextStyle(
                       color: MediaQuery.of(context).platformBrightness ==
                               Brightness.dark
@@ -638,86 +642,6 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     const ListTile(
-                      title: Text("Bolletta RG Energy",
-                          style: TextStyle(
-                            fontSize: 18,
-                          )),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          const TextSpan(
-                            text: "Fisse: ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                "${Cache.getInstance().getCacheData(userData.user).rgData.fixed}\n",
-                          ),
-                          const TextSpan(
-                            text: "Variabili: ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                "${Cache.getInstance().getCacheData(userData.user).rgData.variable}\n",
-                          ),
-                          const TextSpan(
-                            text: "Totale: ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                "${Cache.getInstance().getCacheData(userData.user).rgData.total}\n",
-                          ),
-                          const TextSpan(
-                            text: "Commissioni: ",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: numberFormat.format(Cache.getInstance()
-                                .getCacheData(userData.user)
-                                .rgData
-                                .commissions),
-                          ),
-                        ],
-                        style: const TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    ButtonBar(
-                      children: [
-                        TextButton(
-                            onPressed: () async {
-                              await http.get(Uri.parse(
-                                  "https://rgbasics.rgbcraft.com/rg-energy/checkBill.php?user=${userData.user}&action=pay&password=${userData.pass}"));
-                              await sendMoney(
-                                  "NInc.",
-                                  Cache.getInstance()
-                                      .getCacheData(userData.user)
-                                      .rgData
-                                      .commissions,
-                                  context);
-                            },
-                            child: const Text("Paga bolletta")),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                child: Column(
-                  children: [
-                    const ListTile(
                       title: Text("Ultimi movimenti",
                           style: TextStyle(
                             fontSize: 18,
@@ -728,7 +652,7 @@ class _HomePageState extends State<HomePage> {
                         children: getLastMovementsText(),
                       ),
                     ),
-                    ButtonBar(
+                    OverflowBar(
                       children: [
                         TextButton(
                           onPressed: () {
@@ -762,10 +686,10 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     } catch (e, trace) {
-      FLog.fatal(text: "Error loading page", exception: e, stacktrace: trace);
+      // log("Error loading page", exception: e, stacktrace: trace);
       return Scaffold(
         body: Center(
-          child: Text("Error type ${e.runtimeType}"),
+          child: Text("Error type ${trace}"),
         ),
       );
     }

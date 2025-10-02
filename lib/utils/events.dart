@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:f_logs/f_logs.dart';
 
 class Event<T> {
@@ -26,7 +28,7 @@ class EventManager {
   void addListener(EventListener listener) => listeners.add(listener);
 
   Future<void> dispatchEvent(Event event) async {
-    FLog.info(text: "Dispatching event ${event.name}");
+    log("Dispatching event ${event.name}");
     // Serve a controllare se un evento è stato gestito
     // in caso negativo lo aggiungo ad una lista di "vecchi eventi"
     for (var listener in listeners) {
@@ -37,8 +39,8 @@ class EventManager {
         try {
           listener.function(event.data);
         } catch (e, trace) {
-          FLog.severe(text: "Error for event ${event.name}", exception: e);
-          FLog.trace(text: "Trace", exception: e, stacktrace: trace);
+          // log("Error for event ${event.name}", exception: e);
+          // log("Trace", exception: e, stacktrace: trace);
         }
       } // Forse dovrei aggiungere qualcosa di più come controllo,
     } // tipo se viene gestito l'evento ricevuto o meno
